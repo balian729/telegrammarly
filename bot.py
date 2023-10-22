@@ -10,6 +10,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQu
 from create_bot import dp, bot
 
 import keyboard
+import function as f
 
 class Form(StatesGroup):
     to_fix = State()
@@ -43,7 +44,8 @@ async def functionality(call: CallbackQuery, state: FSMContext):
 
 @dp.message(Form.to_fix)
 async def return_fix(message: types.Message, state: FSMContext):
-    await bot.send_message(message.chat.id, message.text + '\n\nstop')
+    mess = await f.str_to_list(message.text)
+    await bot.send_message(message.chat.id, str(mess) + '\n\nstop')
     await state.clear()
 
 
