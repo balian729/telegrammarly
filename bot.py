@@ -1,11 +1,19 @@
 import asyncio
 
 from aiogram import types
+from aiogram.dispatcher import router
 from aiogram.filters.command import Command
-
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from create_bot import dp, bot
 
+import keyboard
+
+class Form(StatesGroup):
+    to_fix = State()
+    to_upgrade = State()
 
 @dp.message(Command('start'))
 async def hello(message: types.Message):
@@ -17,9 +25,27 @@ async def hello(message: types.Message):
                            "📝 **Spelling Check**: Worried about typos? I'll catch those too!\n"
                            "🔍 **Vocabulary Enhancement**: Need to elevate your language? I can suggest better word choices.\n"
                            "📖 **Style Improvements**: I'll help you polish your writing style for clarity and coherence.\n"
-                           "To get started, simply send me your text, and I'll do the rest. You can also use commands to specify the type of check you need. For example, send \"/grammar\" for a grammar check or \"/spelling\" for a spelling check.\n"
                            "If you ever need assistance or have questions, feel free to type \"/help\" anytime.\n"
                            "Let's make your writing shine! ✨\n")
+
+
+@dp.message(Command('menu'))
+async def choose_opt(message: types.Message):
+    await bot.send_message(message.chat.id, 'Choose your option:', reply_markup=keyboard.menu)
+
+
+@dp.callback_query()
+async def functionality(call: CallbackQuery, state: FSMContext):
+    if call.data == 'fix':
+        await bot.send_message(call.from_user.id, 'Write down your text to fix')
+        await state.set_state(Form.to_fix)
+
+
+@dp.message(Form.to_fix)
+async def return_fix(message: types.Message, state: FSMContext):
+    await bot.send_message(message.chat.id, message.text + '\n\nstop')
+    await state.clear()
+
 
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
