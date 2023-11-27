@@ -15,6 +15,7 @@ import function as f
 class Form(StatesGroup):
     to_fix = State()
     to_upgrade = State()
+    to_paraphrase = State()
 
 @dp.message(Command('start'))
 async def hello(message: types.Message):
@@ -40,12 +41,14 @@ async def functionality(call: CallbackQuery, state: FSMContext):
     if call.data == 'fix':
         await bot.send_message(call.from_user.id, 'Write down your text to fix')
         await state.set_state(Form.to_fix)
+    elif call.data == 'paraphrase':
+        await bot.send_message(call.from_user.id, 'Write down your text to fix')
+        await state.set_state(Form.to_paraphrase)
 
-
-@dp.message(Form.to_fix)
+@dp.message(Form.to_paraphrase)
 async def return_fix(message: types.Message, state: FSMContext):
-    mess = await f.str_to_list(message.text)
-    await bot.send_message(message.chat.id, str(mess) + '\n\nstop')
+    mess = await f.paraphrase_text(message.text)
+    await bot.send_message(message.chat.id, mess)
     await state.clear()
 
 
