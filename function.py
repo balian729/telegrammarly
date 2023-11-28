@@ -40,4 +40,3 @@ async def paraphrase_text(full_text, num_return_sequences=10):
         worst_sen = ''
 
     return paraphrased_text
-

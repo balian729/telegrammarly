@@ -12,10 +12,12 @@ from create_bot import dp, bot
 import keyboard
 import function as f
 
+
 class Form(StatesGroup):
     to_fix = State()
     to_upgrade = State()
     to_paraphrase = State()
+
 
 @dp.message(Command('start'))
 async def hello(message: types.Message):
@@ -44,6 +46,7 @@ async def functionality(call: CallbackQuery, state: FSMContext):
     elif call.data == 'paraphrase':
         await bot.send_message(call.from_user.id, 'Write down your text to fix')
         await state.set_state(Form.to_paraphrase)
+
 
 @dp.message(Form.to_paraphrase)
 async def return_fix(message: types.Message, state: FSMContext):
